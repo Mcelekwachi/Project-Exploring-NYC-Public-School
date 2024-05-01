@@ -1,0 +1,50 @@
+# Re-run this cell 
+import pandas as pd
+import numpy as np
+
+# Read in the data
+schools = pd.read_csv("schools.csv")
+
+# Preview the data
+schools.head()
+
+# Calculate maths result greater or equal to 80% as best math results and
+best_math_schools = schools[schools["average_math"] >= 640]
+
+# Select the best math results with school name
+
+best_math_schools = best_math_schools[["school_name", "average_math"]]
+best_math_schools = best_math_schools.sort_values("average_math",                                                ascending=False)
+best_math_schools.head()
+
+# Top 10 performing schools based on the combined SAT scores?
+# Add the necessary columns to arrive at the total sum
+schools["total_SAT"] = schools["average_math"] + schools["average_reading"
+                    ] + schools["average_writing"]
+schools = schools.sort_values( "total_SAT", ascending=False)
+# Select and store the required colums
+top_10_schools = schools[["school_name", "total_SAT"]]
+top_10_schools = top_10_schools.head(10)
+print(top_10_schools)
+
+#result = schools[["total_SAT","borough"]].std()
+#result.head()
+
+borough = schools.groupby("borough")["total_SAT"].agg(["min",
+                "max", "mean", "median", "count", "std"])
+
+# Find borough with largest std
+largest_std_dev_borough = borough.loc[borough["std"].idxmax()]
+
+# Create DataFrame with the results
+largest_std_dev = pd.DataFrame({
+    "borough": largest_std_dev_borough.name,
+    "num_schools": largest_std_dev_borough["count"],
+    "average_SAT": largest_std_dev_borough["mean"],
+    "std_SAT": largest_std_dev_borough["std"]
+}, index=[0])
+
+
+# Display the DataFrame
+largest_std_dev = round(largest_std_dev, 2)
+print(largest_std_dev)
